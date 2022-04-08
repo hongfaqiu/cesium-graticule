@@ -1,0 +1,36 @@
+{
+  "name": "cesium-graticule",
+  "version": "0.1.0",
+  "description": "Lat/Lon Graticule for Cesium map",
+  "type": "module",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.module.js",
+  "exports": "./lib/index.modern.js",
+  "source": "src/index.ts",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "start": "cd demo && npm start",
+    "build": "microbundle -f es,modern src/index.ts && microbundle -f cjs,umd src/index.cjs.ts",
+    "prepublish": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hongfaqiu/cesium-graticule.git"
+  },
+  "keywords": [
+    "Cesium",
+    "Graticule"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "cesium": "*"
+  },
+  "devDependencies": {
+    "microbundle": "^0.14.2"
+  },
+  "files": [
+    "lib",
+    "README.md"
+  ]
+}
