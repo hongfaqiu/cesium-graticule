@@ -2,7 +2,6 @@ import "cesium/Build/Cesium/Widgets/widgets.css";
 import * as Cesium from 'cesium';
 
 import type { ImageryLayer, ImageryProvider, Viewer } from 'cesium';
-import Graticules from "./Graticules";
 
 Cesium.Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4OGQwZTM2MC00NjkzLTRkZTgtYTU5MS0xZTA1NTljYWQyN2UiLCJpZCI6NTUwODUsImlhdCI6MTYyMDM5NjQ3NH0.lu_JBwyngYucPsvbCZt-xzmzgfwEKwcRXiYs5uV8uTM';
@@ -76,15 +75,6 @@ export default class CesiumMap {
    antiAliasing(val: boolean) {
     this.viewer.postProcessStages.fxaa.enabled = val;
     this.viewer.scene.requestRender();
-  }
-  
-  /**
-   * 添加经纬网
-   * @returns {Graticules} Graticules
-   */
-  addGraticules() {
-    const GraticulesObj = new Graticules(this.viewer);
-    return GraticulesObj;
   }
 
   /**

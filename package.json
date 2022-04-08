@@ -1,6 +1,6 @@
 {
   "name": "cesium-graticule",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Lat/Lon Graticule for Cesium map",
   "type": "module",
   "main": "./lib/index.cjs",
@@ -10,7 +10,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "start": "cd demo && npm start",
-    "build": "microbundle -f es,modern src/index.ts && microbundle -f cjs,umd src/index.cjs.ts",
+    "build": "microbundle -f es,modern demo/src/utils/Graticules/index.ts && microbundle -f cjs,umd demo/src/utils/Graticules/index.cjs.ts",
     "prepublish": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

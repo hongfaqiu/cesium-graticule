@@ -1,3 +1,4 @@
+import Graticules from './utils/Graticules';
 import CesiumMap from './utils/map';
 
 // initialization
@@ -16,4 +17,4 @@ MapObj.zoomToViewPort([116.3, 39.9, 15000000]);
 MapObj.antiAliasing(true);
 
 // 添加经纬网
-MapObj.addGraticules();
+const GraticulesObj = new Graticules(MapObj.viewer);

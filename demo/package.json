@@ -1,7 +1,7 @@
 {
-  "name": "mvt-imagery-provider",
-  "version": "0.1.2",
-  "description": "A Mapbox style renderer for CesiumJS",
+  "name": "cesium-graticule",
+  "version": "0.1.1",
+  "description": "Lat/Lon Graticule for Cesium map",
   "scripts": {
     "build": "webpack --mode=production",
     "start": "webpack-dev-server --mode=development",
@@ -9,12 +9,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/hongfaqiu/MVTImageryProvider.git"
+    "url": "git://github.com/hongfaqiu/cesium-graticule.git"
   },
   "keywords": [
-    "Mapbox Style",
-    "Vector Tile",
-    "Cesium"
+    "Cesium",
+    "Graticule"
   ],
   "license": "MIT",
   "devDependencies": {
@@ -28,6 +27,7 @@
     "@types/webpack": "^5.28.0",
     "babel-loader": "^8.2.3",
     "clean-webpack-plugin": "^4.0.0",
+    "compression-webpack-plugin": "^9.2.0",
     "copy-webpack-plugin": "^10.2.4",
     "css-loader": "^6.6.0",
     "html-webpack-plugin": "^5.5.0",
@@ -40,11 +40,6 @@
     "webpack-dev-server": "^4.7.4"
   },
   "dependencies": {
-    "cesium": "^1.91.0",
-    "pbf-basic-render": "^0.0.6"
-  },
-  "files": [
-    "lib",
-    "README.md"
-  ]
+    "cesium": "^1.91.0"
+  }
 }

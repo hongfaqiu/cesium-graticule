@@ -71,7 +71,7 @@ const BaseConfig: WebpackConfiguration = {
     }),
   ],
   optimization: {
-    minimize: true,
+    minimize: false,
     splitChunks: {
       chunks: 'all',
       minSize: 20000,
