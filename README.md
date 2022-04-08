@@ -53,7 +53,6 @@ Stop show Lat/Lon Graticule.
 Launch the app in the demo folder, and then visit http://localhost:8080/
 
 ```node
-cd demo
 pnpm i
 npm start
 ```

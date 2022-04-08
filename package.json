@@ -2,16 +2,16 @@
   "name": "cesium-graticule",
   "version": "0.1.1",
   "description": "Lat/Lon Graticule for Cesium map",
-  "type": "module",
   "main": "./lib/index.cjs",
   "module": "./lib/index.module.js",
   "exports": "./lib/index.modern.js",
-  "source": "demo/src/utils/Graticules/index.ts",
+  "source": "src/utils/Graticules/index.ts",
   "types": "lib/index.d.ts",
   "scripts": {
-    "start": "cd demo && npm start",
-    "build": "microbundle",
-    "prepublish": "npm run build",
+    "build": "webpack --mode=production",
+    "build-module": "microbundle --tsconfig=tsconfig.microbundle.json",
+    "start": "webpack-dev-server --mode=development",
+    "prepublish": "npm run build-module",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -27,7 +27,29 @@
     "cesium": "*"
   },
   "devDependencies": {
-    "microbundle": "^0.14.2"
+    "@babel/core": "^7.17.5",
+    "@babel/plugin-transform-runtime": "^7.17.0",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
+    "@babel/preset-typescript": "^7.16.7",
+    "@babel/runtime": "^7.17.2",
+    "@types/node": "^17.0.21",
+    "@types/webpack": "^5.28.0",
+    "babel-loader": "^8.2.3",
+    "cesium": "^1.91.0",
+    "clean-webpack-plugin": "^4.0.0",
+    "compression-webpack-plugin": "^9.2.0",
+    "copy-webpack-plugin": "^10.2.4",
+    "css-loader": "^6.6.0",
+    "microbundle": "^0.14.2",
+    "html-webpack-plugin": "^5.5.0",
+    "style-loader": "^3.3.1",
+    "ts-node": "^10.6.0",
+    "typescript": "^4.6.2",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.69.1",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.7.4"
   },
   "files": [
     "lib",
