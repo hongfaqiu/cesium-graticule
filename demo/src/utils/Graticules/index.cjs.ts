@@ -1,3 +1,3 @@
-import MVTImageryProvider from ".";
+export * from '.';
 
-export default MVTImageryProvider;
+export { default } from '.';

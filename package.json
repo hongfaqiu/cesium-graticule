@@ -6,11 +6,11 @@
   "main": "./lib/index.cjs",
   "module": "./lib/index.module.js",
   "exports": "./lib/index.modern.js",
-  "source": "src/index.ts",
+  "source": "demo/src/utils/Graticules/index.ts",
   "types": "lib/index.d.ts",
   "scripts": {
     "start": "cd demo && npm start",
-    "build": "microbundle -f es,modern demo/src/utils/Graticules/index.ts && microbundle -f cjs,umd demo/src/utils/Graticules/index.cjs.ts",
+    "build": "microbundle",
     "prepublish": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
