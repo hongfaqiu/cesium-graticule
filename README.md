@@ -2,9 +2,11 @@
 
 Lat/Lon Graticule for Cesium map
 
+![](https://img.shields.io/bundlephobia/minzip/cesium-graticule) <a href="https://www.npmjs.com/package/cesium-graticule">![](https://img.shields.io/npm/v/cesium-graticule)</a> ![](https://img.shields.io/npm/types/cesium-graticule) ![](https://img.shields.io/npm/l/cesium-graticule)
+
 ## Install
 
-```js
+```bash
 npm install --save cesium-graticule
 
 pnpm add cesium-graticule
@@ -26,16 +28,23 @@ const GraticuleObj = Graticule(cesiumViewer);
 
 ```ts
 type GraticulesOptions = {
-  color?: Color;
-  debounce?: number; // Refresh time
+  color?: string;
+  debounce?: number;
   gridCount?: number;
+  labelOptions?: {
+    fillColor?: string;
+    meridians?: boolean;
+  }
 }
 
 DefaultGraticulesOptions = {
-  color: Cesium.Color.WHITE.withAlpha(.5),
+  color: '#ffffff80',
   debounce: 500,
-  gridCount: 15
-}
+  gridCount: 15,
+  labelOptions: {
+    fillColor: 'white',
+    meridians: true,
+  }
 ```
 
 ### start()

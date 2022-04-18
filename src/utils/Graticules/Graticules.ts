@@ -39,12 +39,16 @@ function convertDEGToDMS(deg: number, isLat: boolean) {
 }
 
 type GraticulesOptions = {
-  color?: Color;
+  color?: string;
   debounce?: number;
   gridCount?: number;
+  labelOptions?: {
+    fillColor?: string;
+    meridians?: boolean;
+  }
 }
 export default class Graticules {
-  #color: Color;
+  #color: string;
   #viewer: Viewer;
   #scene: Scene;
   #labels: LabelCollection;
@@ -56,6 +60,11 @@ export default class Graticules {
   #debounce = 500;
   #gridCount: number;
   #granularity = Cesium.Math.toRadians(3)
+  #destoryed = false;
+  #labelOptions: {
+    fillColor: string;
+    meridians: boolean;
+  }
 
   /**
    * Create a Graticules Object
@@ -67,8 +76,13 @@ export default class Graticules {
   constructor(viewer: Viewer, options: GraticulesOptions = {}) {
     this.#viewer = viewer;
     this.#scene = viewer.scene;
-    this.#color = options.color || Cesium.Color.WHITE.withAlpha(.5);
+    this.#color = options.color || '#ffffff80';
     this.#gridCount = options.gridCount || 15;
+    this.#labelOptions = {
+      fillColor: 'white',
+      meridians: true,
+      ...options.labelOptions
+    };
 
     this.#labels = new Cesium.LabelCollection();
     viewer.scene.primitives.add(this.#labels);
@@ -82,6 +96,10 @@ export default class Graticules {
 
   get visible() {
     return this.#visible;
+  }
+
+  get isDestroyed() {
+    return this.#destoryed;
   }
 
   #getExtentView() {
@@ -113,11 +131,12 @@ export default class Graticules {
     return cartesian;
   }
 
-  #makeLabel(lng: number, lat: number, text: string, isLat: boolean, color = "white", meridians = false) {
+  #makeLabel(lng: number, lat: number, text: string, isLat: boolean) {
+    const { fillColor, meridians } = this.#labelOptions;
     if (meridians) {
-      if (text === "0°N") text = "Equator";
-      if (text === "0°E") text = "Prime Meridian";
-      if (text === "180°E") text = "Antimeridian";
+      if (text === "0°00N") text = "Equator";
+      if (text === "0°00E") text = "Prime Meridian";
+      if (text === "180°00W" || text === "180°00E") text = "Antimeridian";
     }
     let center = Cesium.Cartographic.fromCartesian(this.#screenCenterPosition());
     let carto = new Cesium.Cartographic(lng, lat);
@@ -128,7 +147,7 @@ export default class Graticules {
       position,
       text,
       font: `bold 1rem Arial`,
-      fillColor: color,
+      fillColor: fillColor,
       outlineColor: Cesium.Color.BLACK,
       outlineWidth: 4,
       style: Cesium.LabelStyle.FILL_AND_OUTLINE,
@@ -161,10 +180,20 @@ export default class Graticules {
   #drawGrid(extent: Rectangle) {
     if (!extent) extent = this.#getExtentView();
     const { MAX_VALUE } = Cesium.Rectangle;
-    extent = Object.assign({}, extent);
+    const center = Cesium.Cartographic.fromCartesian(this.#screenCenterPosition());
     let wrapLng = undefined;
-    if (extent.east < extent.west) {
-      wrapLng = MAX_VALUE.east + Math.abs(-MAX_VALUE.east - extent.east);
+    let { east, west, south, north } = extent;
+    // Handling exception boundaries
+    if (center.longitude > east && center.longitude < west && east < west) {
+      [east, west] = [west, east];
+    }
+
+    if ((west < east) && ((center.longitude > east && center.longitude > west) || (center.longitude < east && center.longitude < west))) {
+      [east, west] = [west, east];
+    }
+
+    if (east < west) {
+      wrapLng = MAX_VALUE.east + Math.abs(-MAX_VALUE.east - east);
     };
 
     this.#polylines.removeAll();
@@ -177,7 +206,7 @@ export default class Graticules {
     // get the nearest to the calculated value
     for (
       index = 0;
-      index < mins.length && dLat < (extent.north - extent.south) / this.#gridCount;
+      index < mins.length && dLat < (north - south) / this.#gridCount;
       index++
     ) {
       dLat = mins[index];
@@ -185,12 +214,11 @@ export default class Graticules {
 
     for (
       index = 0;
-      index < mins.length && dLng < ((wrapLng === undefined ? extent.east : wrapLng) - extent.west) / this.#gridCount;
+      index < mins.length && dLng < ((wrapLng === undefined ? east : wrapLng) - west) / this.#gridCount;
       index++
     ) {
       dLng = mins[index];
     }
-    const center = Cesium.Cartographic.fromCartesian(this.#screenCenterPosition());
     if (center.latitude > Cesium.Math.toRadians(75) || center.latitude < Cesium.Math.toRadians(-75)) {
     } else
       if (dLng !== dLat) {
@@ -198,21 +226,21 @@ export default class Graticules {
       }
     // round iteration limits to the computed grid interval
     let minLng =
-      (extent.west < 0
-        ? Math.ceil(extent.west / dLng)
-        : ~~(extent.west / dLng)) * dLng;
+      (west < 0
+        ? Math.ceil(west / dLng)
+        : ~~(west / dLng)) * dLng;
     let minLat =
-      (extent.south < 0
-        ? Math.ceil(extent.south / dLat)
-        : ~~(extent.south / dLat)) * dLat;
+      (south < 0
+        ? Math.ceil(south / dLat)
+        : ~~(south / dLat)) * dLat;
     let maxLng =
-      (extent.east < 0
-        ? Math.ceil(extent.east / dLat)
-        : ~~(extent.east / dLat)) * dLat;
+      (east < 0
+        ? Math.ceil(east / dLat)
+        : ~~(east / dLat)) * dLat;
     let maxLat =
-      (extent.north < 0
-        ? Math.ceil(extent.north / dLng)
-        : ~~(extent.north / dLng)) * dLng;
+      (north < 0
+        ? Math.ceil(north / dLng)
+        : ~~(north / dLng)) * dLng;
 
     // extend to make sure we cover for non refresh of tiles
     minLng = Math.max(minLng - 2 * dLng, -Math.PI);
@@ -238,14 +266,13 @@ export default class Graticules {
     let tLng = (wrapLng === undefined ? maxLng : wrapLng);
 
     let countLng = 0;
-
     for (let _lng = minLng; _lng < tLng - dLng; _lng += dLng) {
       if (maxLng > MAX_VALUE.east) {
-        // @ts-ignore
-        lng = extent._east - (_lng - MAX_VALUE.east);
+        lng = east - (_lng - MAX_VALUE.east);
       } else {
         lng = _lng;
       }
+      lng = (lng + Math.PI) % (Math.PI * 2) - Math.PI;
       // draw meridian
       const path = [];
       for (lat = minLat; lat < maxLat; lat += this.#granularity) {
@@ -253,12 +280,13 @@ export default class Graticules {
       }
       path.push(new Cesium.Cartographic(lng, maxLat));
       const degLng = Cesium.Math.toDegrees(lng);
+      
       const text = convertDEGToDMS(+degLng.toFixed(gridPrecision(dLng)), false);
       const color =
-        text === "0°E" || text === "180°E"
+        (text === "0°00E" || text === "180°00W" ||  text === "180°00E")
           ? Cesium.Color.YELLOW
-          : this.#color;
-      if (text !== "180°W") {
+          : Cesium.Color.fromCssColorString(this.#color);
+      if (text) {
         this.#polylines.add(lineGraphicsObj(this.#ellipsoid.cartographicArrayToCartesianArray(path), color));
         if (countLng % 2) {
           this.#makeLabel(lng, latitudeText, text, false);
@@ -281,7 +309,7 @@ export default class Graticules {
       path.push(new Cesium.Cartographic(maxLng, lat));
       const degLat = Cesium.Math.toDegrees(lat);
       const text = convertDEGToDMS(+degLat.toFixed(gridPrecision(dLat)), true);
-      const color = text === "0°N" ? Cesium.Color.YELLOW : Cesium.Color.WHITE.withAlpha(.5);
+      const color = text === "0°00N" ? Cesium.Color.YELLOW : Cesium.Color.WHITE.withAlpha(.5);
       this.#polylines.add(lineGraphicsObj(this.#ellipsoid.cartographicArrayToCartesianArray(path), color));
       if (countLat % 2) {
         this.#makeLabel(longitudeText, lat, text, true);
@@ -328,4 +356,12 @@ export default class Graticules {
     this.#scene.requestRender();
   }
 
+  destory() {
+    this.remove();
+    this.#destoryed = true;
+    // @ts-ignore
+    this.start = undefined;
+    // @ts-ignore
+    this.remove = undefined;
+  }
 }

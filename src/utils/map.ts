@@ -72,9 +72,28 @@ export default class CesiumMap {
   /**
    * 是否开启FXAA抗锯齿
    */
-   antiAliasing(val: boolean) {
-    this.viewer.postProcessStages.fxaa.enabled = val;
-    this.viewer.scene.requestRender();
+  antiAliasing(val: boolean) {
+  this.viewer.postProcessStages.fxaa.enabled = val;
+  this.viewer.scene.requestRender();
+  }
+  
+  
+  // 切换显示模式
+  switchDisplayMode(val: 1 | 2 | 3) {
+    switch (val) {
+      case 2:
+        this.viewer.scene.morphTo2D(0);
+        break;
+      case 3:
+        this.viewer.scene.morphTo3D(0);
+        break;
+      case 1:
+        this.viewer.scene.morphToColumbusView(0); // 哥伦布视图
+        break;
+      default:
+        this.viewer.scene.morphTo3D(0);
+        break;
+    }
   }
 
   /**

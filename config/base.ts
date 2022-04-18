@@ -11,7 +11,7 @@ const cesiumWorkers = '../Build/Cesium/Workers';
 const BaseConfig: WebpackConfiguration = {
   entry: {
     index: {
-      import: './src/app.tsx',
+      import: './src/app.ts',
     },
   },
   output: {
