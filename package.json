@@ -1,6 +1,6 @@
 {
   "name": "cesium-graticule",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "Lat/Lon Graticule for Cesium map",
   "main": "./lib/index.cjs",
   "module": "./lib/index.module.js",
@@ -11,7 +11,7 @@
     "build": "webpack --mode=production",
     "build:lib": "microbundle --tsconfig=tsconfig.microbundle.json",
     "start": "webpack-dev-server --mode=development",
-    "prepublish": "npm run build-module",
+    "prepublish": "npm run build:lib",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

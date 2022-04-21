@@ -119,6 +119,29 @@ export default class Graticules {
     return Cesium.Rectangle.fromCartographicArray(this.#ellipsoid.cartesianArrayToCartographicArray(corners as Cesium.Cartesian3[]));
   }
 
+  #getScreenViewRange() {
+    const camera = this.#scene.camera;
+    const canvas = this.#scene.canvas;
+    const height = camera.positionCartographic.height; 
+    let offsetX = 40, offsetY = 20;
+    if (height < 36000) {
+      offsetX = 60;
+    }
+    const corners = {
+      north: camera.pickEllipsoid(new Cesium.Cartesian2(canvas.width / 2, offsetY), this.#ellipsoid),
+      south: camera.pickEllipsoid(new Cesium.Cartesian2(canvas.width / 2, canvas.height - offsetY), this.#ellipsoid),
+      west: camera.pickEllipsoid(new Cesium.Cartesian2(offsetX, canvas.height / 2), this.#ellipsoid),
+      east: camera.pickEllipsoid(new Cesium.Cartesian2(canvas.width - offsetX, canvas.height / 2), this.#ellipsoid)
+    }
+    const restult = {
+      north: corners.north ? Cesium.Cartographic.fromCartesian(corners.north).latitude : undefined,
+      south: corners.south ? Cesium.Cartographic.fromCartesian(corners.south).latitude : undefined,
+      west: corners.west ? Cesium.Cartographic.fromCartesian(corners.west).longitude : undefined,
+      east: corners.east ? Cesium.Cartographic.fromCartesian(corners.east).longitude : undefined,
+    }
+    return restult;
+  }
+
   #screenCenterPosition() {
     let canvas = this.#scene.canvas;
     let center = new Cesium.Cartesian2(
@@ -138,41 +161,73 @@ export default class Graticules {
       if (text === "0°00E") text = "Prime Meridian";
       if (text === "180°00W" || text === "180°00E") text = "Antimeridian";
     }
-    let center = Cesium.Cartographic.fromCartesian(this.#screenCenterPosition());
-    let carto = new Cesium.Cartographic(lng, lat);
-    if (isLat) carto.longitude = center.longitude;
-    else carto.latitude = center.latitude;
-    let position = this.#ellipsoid.cartographicToCartesian(carto);
-    let label = this.#labels.add({
-      position,
-      text,
-      font: `bold 1rem Arial`,
-      fillColor: fillColor,
-      outlineColor: Cesium.Color.BLACK,
-      outlineWidth: 4,
-      style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-      pixelOffset: new Cesium.Cartesian2(isLat ? 0 : 4, isLat ? -6 : 0),
-      eyeOffset: Cesium.Cartesian3.ZERO,
-      horizontalOrigin: isLat
-        ? Cesium.HorizontalOrigin.CENTER
-        : Cesium.HorizontalOrigin.CENTER,
-      verticalOrigin: isLat
-        ? Cesium.VerticalOrigin.BOTTOM
-        : Cesium.VerticalOrigin.TOP,
-      scale: 1,
-      scaleByDistance: new Cesium.NearFarScalar(1, 0.85, 8.0e6, .75)
-    });
-    label["isLat"] = isLat;
+    const range = this.#getScreenViewRange();
+    const center = Cesium.Cartographic.fromCartesian(this.#screenCenterPosition());
+    const carto = new Cesium.Cartographic(lng, lat);
+
+    const addLabel = (carto: Cesium.Cartographic, isLat: boolean, pos: string) => {
+      const position = this.#ellipsoid.cartographicToCartesian(carto);
+      const label = this.#labels.add({
+        position,
+        text,
+        font: `bold 1rem Arial`,
+        fillColor: fillColor,
+        outlineColor: Cesium.Color.BLACK,
+        outlineWidth: 4,
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        pixelOffset: new Cesium.Cartesian2(isLat ? 0 : 4, isLat ? -6 : 0),
+        eyeOffset: Cesium.Cartesian3.ZERO,
+        horizontalOrigin: isLat
+          ? Cesium.HorizontalOrigin.CENTER
+          : Cesium.HorizontalOrigin.CENTER,
+        verticalOrigin: isLat
+          ? Cesium.VerticalOrigin.BOTTOM
+          : Cesium.VerticalOrigin.TOP,
+        scale: 1,
+        scaleByDistance: new Cesium.NearFarScalar(1, 0.85, 8.0e6, .75)
+      });
+      label["isLat"] = isLat;
+      label["pos"] = pos;
+      return label;
+    }
+
+    if (isLat) {
+      if (range.east === undefined && range.west === undefined) {
+        carto.longitude = center.longitude;
+        addLabel(carto, isLat, 'center');
+      } else {
+        ['east', 'west'].map(item => {
+          if (range[item]) {
+            carto.longitude = range[item];
+            addLabel(carto, isLat, item);
+          }
+        })
+      }
+    } else {
+      if (range.south === undefined && range.north === undefined) {
+        carto.latitude = center.latitude;
+        addLabel(carto, isLat, 'center');
+      } else {
+        ['south', 'north'].map(item => {
+          if (range[item]) {
+            carto.latitude = range[item];
+            addLabel(carto, isLat, item);
+          }
+        })
+      }
+    }
+    
   }
 
   #updateLabelPositions() {
-    let center = Cesium.Cartographic.fromCartesian(this.#screenCenterPosition());
+    const range = this.#getScreenViewRange();
+    const center = Cesium.Cartographic.fromCartesian(this.#screenCenterPosition());
     const len = this.#labels.length;
     for (let i = 0; i < len; ++i) {
       const b = this.#labels.get(i);
-      let carto = Cesium.Cartographic.fromCartesian(b.position);
-      if (b["isLat"]) carto.longitude = center.longitude;
-      else carto.latitude = center.latitude;
+      const carto = Cesium.Cartographic.fromCartesian(b.position);
+      if (b["isLat"]) carto.longitude = range[b['pos']] ? range[b['pos']] : center.longitude;
+      else carto.latitude = range[b['pos']] ? range[b['pos']] : center.latitude;
       b.position = this.#ellipsoid.cartographicToCartesian(carto);
     }
   }
@@ -339,7 +394,7 @@ export default class Graticules {
   }
 
   start() {
-    this.#viewer.camera.percentageChanged = 0.03;
+    this.#viewer.camera.percentageChanged = 0.01;
     this.#viewer.scene.camera.changed.addEventListener(this.#render);
     this.#viewer.container.addEventListener("resize", this.#render);
     this.#render();
