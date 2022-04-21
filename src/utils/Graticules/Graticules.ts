@@ -107,9 +107,9 @@ export default class Graticules {
     const canvas = this.#scene.canvas;
     const corners = [
         camera.pickEllipsoid(new Cesium.Cartesian2(0, 0), this.#ellipsoid),
-        camera.pickEllipsoid(new Cesium.Cartesian2(canvas.width, 0), this.#ellipsoid),
-        camera.pickEllipsoid(new Cesium.Cartesian2(0, canvas.height), this.#ellipsoid),
-        camera.pickEllipsoid(new Cesium.Cartesian2(canvas.width, canvas.height), this.#ellipsoid)
+        camera.pickEllipsoid(new Cesium.Cartesian2(canvas.clientWidth, 0), this.#ellipsoid),
+        camera.pickEllipsoid(new Cesium.Cartesian2(0, canvas.clientHeight), this.#ellipsoid),
+        camera.pickEllipsoid(new Cesium.Cartesian2(canvas.clientWidth, canvas.clientHeight), this.#ellipsoid)
     ];
     for(let index = 0; index < 4; index++) {
         if(corners[index] === undefined) {
@@ -128,10 +128,10 @@ export default class Graticules {
       offsetX = 60;
     }
     const corners = {
-      north: camera.pickEllipsoid(new Cesium.Cartesian2(canvas.width / 2, offsetY), this.#ellipsoid),
-      south: camera.pickEllipsoid(new Cesium.Cartesian2(canvas.width / 2, canvas.height - offsetY), this.#ellipsoid),
-      west: camera.pickEllipsoid(new Cesium.Cartesian2(offsetX, canvas.height / 2), this.#ellipsoid),
-      east: camera.pickEllipsoid(new Cesium.Cartesian2(canvas.width - offsetX, canvas.height / 2), this.#ellipsoid)
+      north: camera.pickEllipsoid(new Cesium.Cartesian2(canvas.clientWidth / 2, offsetY), this.#ellipsoid),
+      south: camera.pickEllipsoid(new Cesium.Cartesian2(canvas.clientWidth / 2, canvas.clientHeight - offsetY), this.#ellipsoid),
+      west: camera.pickEllipsoid(new Cesium.Cartesian2(offsetX, canvas.clientHeight / 2), this.#ellipsoid),
+      east: camera.pickEllipsoid(new Cesium.Cartesian2(canvas.clientWidth - offsetX, canvas.clientHeight / 2), this.#ellipsoid)
     }
     const restult = {
       north: corners.north ? Cesium.Cartographic.fromCartesian(corners.north).latitude : undefined,
