@@ -24,36 +24,94 @@ const GraticuleObj = Graticule(cesiumViewer);
 
 ## API
 
-### ``new Graticule(viewer: Cesium.Viewer, options: GraticulesOptions)``
-
 ```ts
-type GraticulesOptions = {
-  color?: string;
-  debounce?: number;
-  gridCount?: number;
-  labelOptions?: {
-    fillColor?: string;
-    meridians?: boolean;
-  }
+class Graticules {
+  /**
+   * Create a Graticules Object
+   * @param {Viewer} viewer cesium viewer
+   * @param {GraticulesOptions} [options] - Object with the following properties:
+   * @param {Color} [options.color = Color.WHITE.withAlpha(.5)] - The line color. Defaults to Color.WHITE.withAlpha(.5)
+   * @param {Color} [options.meridiansColor = Color.YELLOW] - The meridians line color, show only meridians option is true. Defaults to Color.YELLOW
+   * @param {number} [options.debounce = 500] - The render debounce value, defaults to 500ms
+   * @param {number} [options.gridCount = 15] - Lines in screen, defaults to 15
+   * @param {boolean} [options.meridians = true] - If show the colored meridians, defaults to true
+   * @param {LabelOptions} [options.labelOptions] - The label style
+   * @example
+   * const GraticulesObj = new Graticules(MapObj.viewer, {
+   *  meridians: false
+   * });
+   */
+  constructor(viewer: Viewer, options?: GraticulesOptions);
+  /**
+   * Get or set graticules visible
+   */
+  get visible(): boolean;
+  set visible(val: boolean);
+  get isDestroyed(): boolean;
+  /**
+   * Show Lat/Lon Graticule
+   */
+  show(): void;
+  /**
+   * Hide Lat/Lon Graticule
+   */
+  hide(): void;
+  /**
+   * Destory class
+   */
+  destory(): void;
 }
 
-DefaultGraticulesOptions = {
-  color: '#ffffff80',
-  debounce: 500,
-  gridCount: 15,
-  labelOptions: {
-    fillColor: 'white',
-    meridians: true,
-  }
+type GraticulesOptions = {
+  /**
+   * The line color. Defaults to Color.WHITE.withAlpha(.5)
+   */
+  color?: Color;
+  /**
+   * The meridians line color, show only meridians option is true. Defaults to Color.YELLOW
+   */
+  meridiansColor?: Color;
+  /**
+   * The render debounce value, defaults to 500ms
+   */
+  debounce?: number;
+  /**
+   * Lines in screen, defaults to 15
+   */
+  gridCount?: number;
+  /**
+   * If show the colored meridians, defaults to true
+   */
+  meridians?: boolean;
+  /**
+   * Label style
+   */
+  labelOptions?: LabelOptions;
+};
+
+type LabelOptions = {
+  /**
+   * font css, defaults to `bold 1rem Arial`
+   */
+  font?: string;
+  /**
+   * defaults to Color.WHITE
+   */
+  fillColor?: Color;
+  /**
+   * defaults to Color.BLACK
+   */
+  outlineColor?: Color;
+  /**
+   * defualts to 4
+   */
+  outlineWidth?: number;
+  /**
+   * Describes how to draw a label, defaults to LabelStyle.FILL_AND_OUTLINE
+   */
+  style?: LabelStyle;
+};
 ```
-
-### start()
-
-Show Lat/Lon Graticule.
-
-### remove()
-
-Stop show Lat/Lon Graticule.
 
 ## Demo
 

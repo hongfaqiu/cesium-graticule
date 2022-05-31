@@ -8,7 +8,6 @@
 </head>
 <body>
   <div id="app">
-    <div id="switch" title="Switch to 2.5D">3D</div>
   </div>
 </body>
 
@@ -23,22 +22,27 @@
     height: 100%;
     width: 100%;
   }
-  #switch {
-    line-height: 30px;
-    text-align: center;
-    position: absolute;
+  .cesium-viewer-toolbar {
     right: 30px;
-    top: 315px;
-    z-index: 1;
-    width: 30px;
-    height: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.8);
-    transition: all ease .3s;
-    cursor: pointer;
+    top: 300px;
   }
-  #switch:hover {
-    color: white;
+  span.cesium-sceneModePicker-wrapper {
+    margin: 0;
+    direction: rtl;
+    display: flex;
+    width: auto;
+    align-items: center;
+  }
+  .cesium-sceneModePicker-hidden {
+    height: 0;
+    width: 0;
+    border: none;
+  }
+  .cesium-sceneModePicker-wrapper .cesium-sceneModePicker-button2D, .cesium-sceneModePicker-wrapper .cesium-sceneModePicker-button3D, .cesium-sceneModePicker-wrapper .cesium-sceneModePicker-buttonColumbusView {
+    margin: 0 0 0 3px;
+  }
+  .cesium-sceneModePicker-wrapper .cesium-sceneModePicker-dropDown-icon {
+    margin: 0 3px;
   }
 </style>
 </html>
