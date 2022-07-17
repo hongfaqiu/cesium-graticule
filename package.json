@@ -1,6 +1,6 @@
 {
   "name": "cesium-graticule",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Lat/Lon Graticule for Cesium map",
   "main": "./lib/index.cjs",
   "module": "./lib/index.module.js",

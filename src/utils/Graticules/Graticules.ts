@@ -343,24 +343,24 @@ export default class Graticules {
       (west < 0
         ? Math.ceil(west / dLng)
         : ~~(west / dLng)) * dLng;
+    let maxLng =
+      (east < 0
+        ? Math.ceil(east / dLng)
+        : ~~(east / dLng)) * dLng;
     let minLat =
       (south < 0
         ? Math.ceil(south / dLat)
         : ~~(south / dLat)) * dLat;
-    let maxLng =
-      (east < 0
-        ? Math.ceil(east / dLat)
-        : ~~(east / dLat)) * dLat;
     let maxLat =
       (north < 0
-        ? Math.ceil(north / dLng)
-        : ~~(north / dLng)) * dLng;
+        ? Math.ceil(north / dLat)
+        : ~~(north / dLat)) * dLat;
 
     // extend to make sure we cover for non refresh of tiles
     minLng = Math.max(minLng - 2 * dLng, -Math.PI);
     maxLng = Math.min(maxLng + 2 * dLng, Math.PI);
     minLat = Math.max(minLat - 2 * dLat, -Math.PI / 2);
-    maxLat = Math.min(maxLat + 2 * dLng, Math.PI / 2);
+    maxLat = Math.min(maxLat + 2 * dLat, Math.PI / 2);
 
     let lat,
       lng;
