@@ -77,11 +77,11 @@ function convertDEGToDMS(deg: number, isLat: boolean) {
   const degrees = ~~absolute;
   const minutesNotTruncated = Math.round((absolute - degrees) * 600) / 10;
   const minutes = ~~minutesNotTruncated;
-  const seconds = ((minutesNotTruncated - minutes) * 60).toFixed(2);
+  const seconds = ((minutesNotTruncated - minutes) * 60).toFixed(0);
 
   let minSec = "";
-  if (minutes || seconds !== "0.00") minSec += minutes + "'";
-  if (seconds !== "0.00") minSec += seconds + '"';
+  if (minutes || seconds !== "0") minSec += minutes + "'";
+  if (seconds !== "0") minSec += seconds + '"';
 
   return `${degrees}°${minSec.padStart(2, '0')}${isLat ? (deg >= 0 ? "N" : "S") : deg >= 0 ? "E" : "W"}`;
 }
@@ -339,22 +339,10 @@ export default class Graticules {
         dLng = dLat = Math.min(dLat, dLng);
       }
     // round iteration limits to the computed grid interval
-    let minLng =
-      (west < 0
-        ? Math.ceil(west / dLng)
-        : ~~(west / dLng)) * dLng;
-    let maxLng =
-      (east < 0
-        ? Math.ceil(east / dLng)
-        : ~~(east / dLng)) * dLng;
-    let minLat =
-      (south < 0
-        ? Math.ceil(south / dLat)
-        : ~~(south / dLat)) * dLat;
-    let maxLat =
-      (north < 0
-        ? Math.ceil(north / dLat)
-        : ~~(north / dLat)) * dLat;
+    let minLng = ~~(west / dLng) * dLng
+    let maxLng = ~~(east / dLng) * dLng
+    let minLat = ~~(south / dLat) * dLat
+    let maxLat = ~~(north / dLat) * dLat
 
     // extend to make sure we cover for non refresh of tiles
     minLng = Math.max(minLng - 2 * dLng, -Math.PI);
@@ -468,6 +456,7 @@ export default class Graticules {
    * Hide Lat/Lon Graticule
    */
   hide() {
+    if (this.#viewer.isDestroyed()) return;
     this.#polylines.removeAll();
     this.#labels.removeAll();
     this.#viewer.scene.camera.changed.removeEventListener(this.#render);
