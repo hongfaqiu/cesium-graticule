@@ -14,6 +14,8 @@ pnpm add cesium-graticule
 
 ## Usage
 
+a ``cesiumGraticule`` global object is exported in borwser
+
 ```ts
 import * as Cesium from "cesium";
 import Graticule from 'cesium-graticule';
